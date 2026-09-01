@@ -365,8 +365,47 @@ body.light .hero-bg-text { opacity: 0.14; }
   z-index: 3;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 28px;
   max-width: 620px;
+}
+
+/* ---- CINEMATIC HERO SEQUENCE: name -> photo -> details ---- */
+.hero-intro-name {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.hero-intro-details {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.intro-seq {
+  opacity: 0;
+  transform: translateY(30px);
+  filter: blur(8px);
+}
+
+body.cinematic-ready .intro-seq-1 {
+  animation: introRise 1s var(--ease) forwards 0.15s;
+}
+body.cinematic-ready .intro-seq-2 {
+  animation: introPhoto 1.2s var(--ease) forwards 1.15s;
+}
+body.cinematic-ready .intro-seq-3 {
+  animation: introRise 1s var(--ease) forwards 2.15s;
+}
+
+@keyframes introRise {
+  from { opacity: 0; transform: translateY(30px); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes introPhoto {
+  0%   { opacity: 0; transform: translateY(46px) scale(0.8) rotate(-9deg); filter: blur(12px); }
+  62%  { opacity: 1; transform: translateY(-8px) scale(1.04) rotate(-1deg); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0); }
 }
 
 .hero-role {
@@ -417,6 +456,8 @@ body.light .hero-bg-text { opacity: 0.14; }
 }
 
 .primary-btn {
+  position: relative;
+  overflow: hidden;
   background: var(--red);
   color: #fff;
   box-shadow: 0 10px 30px -12px var(--red);
@@ -425,6 +466,21 @@ body.light .hero-bg-text { opacity: 0.14; }
   background: var(--red-bright);
   transform: translateY(-3px);
   box-shadow: 0 16px 34px -10px var(--red-bright);
+}
+.primary-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: skewX(-20deg);
+  animation: btnShimmer 3.4s ease-in-out infinite;
+}
+@keyframes btnShimmer {
+  0% { left: -60%; }
+  55%, 100% { left: 130%; }
 }
 
 .secondary-btn {
@@ -440,9 +496,7 @@ body.light .hero-bg-text { opacity: 0.14; }
 .hero-mini-info {
   display: flex;
   gap: 40px;
-  margin-top: 14px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
+  margin-top: 4px;
 }
 .hero-mini-info > div { display: flex; flex-direction: column; gap: 4px; }
 .mini-number {
@@ -472,6 +526,11 @@ body.light .hero-bg-text { opacity: 0.14; }
   filter: blur(2px);
   opacity: 0.9;
   z-index: -1;
+  animation: circlePulse 5.5s ease-in-out infinite;
+}
+@keyframes circlePulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.045); }
 }
 body.light .hero-circle {
   background: radial-gradient(circle at 35% 30%, var(--red) 0%, #e7c9c0 60%, transparent 80%);
@@ -537,6 +596,22 @@ body.light .hero-circle {
   50% { transform: rotate(-1deg) translateY(-10px); }
 }
 .creative-id-card:hover { animation-play-state: paused; }
+
+.creative-id-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.4) 50%, transparent 58%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+body.cinematic-ready .creative-id-card::after {
+  animation: cardShine 1.3s ease-out forwards 2.45s;
+}
+@keyframes cardShine {
+  to { transform: translateX(130%); }
+}
 
 .card-lanyard {
   position: absolute;
