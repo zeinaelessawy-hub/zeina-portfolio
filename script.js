@@ -234,25 +234,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         /* =====================================
-           STAGGER HERO ELEMENTS
+           HERO CINEMATIC SEQUENCE
+           (name -> photo -> details) is now
+           handled purely by CSS via the
+           .intro-seq-1/2/3 classes once
+           body gets .cinematic-ready
         ===================================== */
-
-        const heroElements =
-            document.querySelectorAll(
-                ".hero .hero-content > *, .hero .hero-visual"
-            );
-
-
-        heroElements.forEach((element, index) => {
-
-            element.style.animationDelay =
-                `${index * 0.12}s`;
-
-            element.classList.add(
-                "cinematic-item"
-            );
-
-        });
 
 
 
