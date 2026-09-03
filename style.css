@@ -351,8 +351,8 @@ body.cinematic-ready .cinematic-loader { opacity: 0; visibility: hidden; }
   font-size: clamp(7rem, 22vw, 20rem);
   letter-spacing: 0.02em;
   color: transparent;
-  -webkit-text-stroke: 1.5px var(--red);
-  opacity: 0.22;
+  -webkit-text-stroke: 1.5px var(--red-bright);
+  opacity: 0.35;
   white-space: nowrap;
   z-index: 0;
   pointer-events: none;
@@ -1334,9 +1334,22 @@ footer {
 }
 
 /* =========================================================
-   THEME TOGGLE MICRO-TRANSITION
-   ========================================================= */
-body, .navbar, .creative-id-card, .skill-card, .education-timeline-card,
+   THEME TOGGLE MICRO-TRANSITION body, .navbar, .creative-id-card, .skill-card, .education-timeline-card,
 .glass-card.service-card, .contact-box, .experience-editorial {
   transition: background 0.6s var(--ease), border-color 0.5s var(--ease), color 0.5s var(--ease), box-shadow 0.5s var(--ease);
+}
+   ========================================================= */
+
+
+/* SMOOTH */
+
+body,
+.navbar,
+.creative-id-card,
+.skill-card,
+.education-timeline-card,
+.glass-card.service-card,
+.contact-box,
+.experience-editorial {
+  transition: background 0.6s var(--ease), border-color 0.5s var(--ease), color 0.5s var(--ease), box-shadow 0.5s var(--ease), opacity 0.5s var(--ease), transform 0.5s var(--ease);
 }
