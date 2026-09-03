@@ -445,7 +445,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const staggerContainers =
         document.querySelectorAll(
-            ".skills-grid, .projects-grid, .education-grid, .experience-grid"
+            ".skills-grid, .projects-grid, .education-grid, .experience-grid, .services-grid"
         );
 
 
@@ -468,6 +468,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* =========================================
        ACTIVE NAVIGATION
+       (FIXED: position-based scroll-spy
+       instead of IntersectionObserver)
+
+       Why the old version was buggy:
+       an IntersectionObserver with a narrow
+       rootMargin band could have TWO sections
+       "intersecting" at the same time when a
+       section (like Skills) is tall. Whichever
+       entry the browser happened to fire last
+       won the "active" class — not necessarily
+       the section actually at the top of the
+       screen. That's why clicking "Projects"
+       could leave "Skills" highlighted.
+
+       Fix: on every scroll, look at each
+       section's real position on the page and
+       pick whichever section's top has most
+       recently passed a fixed offset below the
+       navbar. This always matches what the user
+       is actually looking at.
     ========================================= */
 
     const sections =
@@ -482,65 +502,134 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
 
-    if (
-        "IntersectionObserver" in window &&
-        sections.length
-    ) {
+    function getNavOffset() {
 
-        const navObserver =
-            new IntersectionObserver(
-
-                (entries) => {
-
-                    entries.forEach((entry) => {
-
-                        if (
-                            !entry.isIntersecting
-                        ) return;
+        const navbarEl =
+            document.querySelector(".navbar, nav");
 
 
-                        const sectionId =
-                            entry.target.id;
+        const navbarHeight =
+            navbarEl ? navbarEl.offsetHeight : 0;
 
 
-                        navLinks.forEach((link) => {
+        /* small extra buffer so the section
+           has to be clearly under the navbar
+           before it's considered "current" */
 
-                            const href =
-                                link.getAttribute("href");
+        return navbarHeight + 40;
+
+    }
 
 
-                            link.classList.toggle(
+    function setActiveLink(sectionId) {
 
-                                "active",
+        navLinks.forEach((link) => {
 
-                                href ===
-                                `#${sectionId}`
+            const href =
+                link.getAttribute("href");
 
-                            );
 
-                        });
-
-                    });
-
-                },
-
-                {
-                    threshold: 0.2,
-
-                    rootMargin:
-                        "-15% 0px -60% 0px"
-                }
-
+            link.classList.toggle(
+                "active",
+                href === `#${sectionId}`
             );
-
-
-        sections.forEach((section) => {
-
-            navObserver.observe(section);
 
         });
 
     }
+
+
+    let scrollSpyTicking = false;
+
+
+    function updateActiveSection() {
+
+        scrollSpyTicking = false;
+
+
+        if (!sections.length) return;
+
+
+        const offset = getNavOffset();
+
+        const scrollPosition =
+            window.scrollY + offset;
+
+
+        /* Special case: if we're at the very
+           bottom of the page, force-activate
+           the last section (handles short
+           sections like Contact that may never
+           pass the offset threshold) */
+
+        const atBottom =
+            window.innerHeight + window.scrollY >=
+            document.documentElement.scrollHeight - 2;
+
+
+        if (atBottom) {
+
+            setActiveLink(
+                sections[sections.length - 1].id
+            );
+
+            return;
+
+        }
+
+
+        let currentSectionId =
+            sections[0].id;
+
+
+        sections.forEach((section) => {
+
+            if (
+                section.offsetTop <=
+                scrollPosition
+            ) {
+
+                currentSectionId =
+                    section.id;
+
+            }
+
+        });
+
+
+        setActiveLink(currentSectionId);
+
+    }
+
+
+    function requestScrollSpyUpdate() {
+
+        if (scrollSpyTicking) return;
+
+        scrollSpyTicking = true;
+
+
+        window.requestAnimationFrame(
+            updateActiveSection
+        );
+
+    }
+
+
+    window.addEventListener(
+        "scroll",
+        requestScrollSpyUpdate,
+        { passive: true }
+    );
+
+
+    window.addEventListener(
+        "resize",
+        requestScrollSpyUpdate
+    );
+
+
+    updateActiveSection();
 
 
 
@@ -578,6 +667,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                     event.preventDefault();
+
+
+                    /* Instantly mark this link as
+                       active on click so there's
+                       no flicker/mismatch while the
+                       smooth scroll animation is
+                       still in progress */
+
+                    if (
+                        link.classList.contains(
+                            "nav-links".split(" ")[0]
+                        ) ||
+                        link.closest(".nav-links")
+                    ) {
+
+                        setActiveLink(
+                            targetId.replace("#", "")
+                        );
+
+                    }
 
 
                     target.scrollIntoView({
